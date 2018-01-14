@@ -51,8 +51,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Core.cs" />
-     <Compile Include="Assets\Tile.cs" />
+     <Compile Include="Assets\Scripts\Camera\TouchCamera.cs" />
+     <Compile Include="Assets\Scripts\Core.cs" />
+     <Compile Include="Assets\Scripts\Data.cs" />
+     <Compile Include="Assets\Scripts\TextUnicode.cs" />
+     <Compile Include="Assets\Scripts\Tile.cs" />
+     <Compile Include="Assets\Scripts\TileAction.cs" />
+     <Compile Include="Assets\Scripts\TileType.cs" />
+     <Compile Include="Assets\Scripts\Utils.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
