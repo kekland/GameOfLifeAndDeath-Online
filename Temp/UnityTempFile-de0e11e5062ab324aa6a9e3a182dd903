@@ -156,6 +156,7 @@
 Assets/Scripts/Camera/TouchCamera.cs
 Assets/Scripts/Core.cs
 Assets/Scripts/Data.cs
+Assets/Scripts/TextUnicode.cs
 Assets/Scripts/Tile.cs
 Assets/Scripts/TileAction.cs
 Assets/Scripts/TileType.cs

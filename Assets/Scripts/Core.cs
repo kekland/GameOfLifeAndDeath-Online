@@ -20,7 +20,8 @@ public class Core : MonoBehaviour {
 	public float clickTimeDelta = 0.1f;
 
 	public bool redMove = true;
-	bool shouldApply = false;
+	public bool waitingForConfirmation = false;
+	int actionX, actionY;
 	void Start() {
 		gameTiles = new Tile[mapSizeX, mapSizeY];
 		for (int x = 0; x < mapSizeX; x++) {
@@ -35,6 +36,8 @@ public class Core : MonoBehaviour {
 		clickDelta = Mathf.Clamp(Screen.height * 0.01f, 1f, 7f);
 		RandomFill();
 		EvolutionTick();
+		CalculateActions();
+		UpdateUI();
 	}
 
 	void RandomFill() {
@@ -76,17 +79,21 @@ public class Core : MonoBehaviour {
 			}
 		}
 		if(Input.touchCount == 0) {
-			if (isValidClick && !shouldApply) {
+			if (isValidClick && !waitingForConfirmation) {
 				Vector2 realPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 				realPosition -= Vector2.one;
 				realPosition /= 1.1f;
 				int x = Mathf.RoundToInt(realPosition.x);
 				int y = Mathf.RoundToInt(realPosition.y);
+				if(x < 0 || y < 0 || x >= mapSizeX || y >= mapSizeY) {
+					return;
+				}
+				waitingForConfirmation = true;
+				actionX = x;
+				actionY = y;
 				DoAction(x, y);
-				redMove = !redMove;
-				UpdateUI();
 				CalculateActions();
-				DisplayNextChanges();
+				UpdateUI();
 			}
 			isValidClick = false;
 			clickStart = Vector2.zero;
@@ -94,7 +101,18 @@ public class Core : MonoBehaviour {
 		}
 	}
 
+	public void ApplyButtonUI() {
+		if (waitingForConfirmation) {
+			redMove = !redMove;
+			waitingForConfirmation = false;
+			EvolutionTick();
+			CalculateActions();
+			UpdateUI();
+		}
+	}
+
 	void DoAction(int x, int y) {
+		Debug.Log(x + " " + y);
 		if(gameTiles[x, y].state == TileType.None) {
 			gameTiles[x, y].state = (redMove)? TileType.RedTile : TileType.BlueTile;
 		}
@@ -106,12 +124,13 @@ public class Core : MonoBehaviour {
 	public void EvolutionTick() {
 		ApplyChanges();
 		CalculateActions();
-		DisplayNextChanges();
 	}
 
 	void UpdateUI() {
 		int blueCount = 0;
 		int redCount = 0;
+
+		ApplyButton.interactable = waitingForConfirmation;
 
 		for (int x = 0; x < mapSizeX; x++) {
 			for (int y = 0; y < mapSizeY; y++) {
@@ -154,29 +173,6 @@ public class Core : MonoBehaviour {
 		UpdateUI();
 	}
 
-	void DisplayNextChanges() {
-		for (int x = 0; x < mapSizeX; x++) {
-			for (int y = 0; y < mapSizeY; y++) {
-				if (gameTiles[x, y].action == TileAction.None) {
-					gameTiles[x, y].UpdateTileInner(Data.transparentColor);
-				} else if (gameTiles[x, y].action == TileAction.Die) {
-					gameTiles[x, y].UpdateTileInner(Data.blackColor);
-				} else if (gameTiles[x, y].action == TileAction.RessurectBlue) {
-					gameTiles[x, y].UpdateTileInner(Data.blueColor);
-				} else if (gameTiles[x, y].action == TileAction.RessurectRed) {
-					gameTiles[x, y].UpdateTileInner(Data.redColor);
-				}
-
-				if (gameTiles[x, y].state == TileType.RedTile) {
-					gameTiles[x, y].UpdateTileOuter(Data.redColor);
-				} else if (gameTiles[x, y].state == TileType.BlueTile) {
-					gameTiles[x, y].UpdateTileOuter(Data.blueColor);
-				} else if (gameTiles[x, y].state == TileType.None) {
-					gameTiles[x, y].UpdateTileOuter(Data.blackColor);
-				}
-			}
-		}
-	}
 	void CalculateActions() {
 		for (int x = 0; x < mapSizeX; x++) {
 			for (int y = 0; y < mapSizeY; y++) {

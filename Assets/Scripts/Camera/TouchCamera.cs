@@ -68,7 +68,6 @@ public class TouchCamera : MonoBehaviour {
 				oldTouchDistance = newTouchDistance;
 			}
 		}
-		Debug.Log(Input.touchCount);
 		bool isWide = Screen.width > Screen.height;
 		aspectRatio = (float)Screen.width / (float)Screen.height;
 		aspectRatioInverse = 1f / aspectRatio;
